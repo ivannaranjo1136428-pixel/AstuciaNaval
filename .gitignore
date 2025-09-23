@@ -1,0 +1,12 @@
+bin/
+build/
+*.o
+*.out
+*.exe
+*.obj
+.vscode/
+*.swp
+.DS_Store
+partida.dat
+save.txt
+*.log
