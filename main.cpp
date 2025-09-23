@@ -11,8 +11,10 @@ using namespace std;
 
 // ==================== Clase Casilla ====================
 class Casilla {
+    // Cambio de prueba en la rama johan
+
     bool ocupado;
-    bool disparado;
+    bool disparado;//dispara al barco
     bool hundido;
     int idBarco;
 public:
