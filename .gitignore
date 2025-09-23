@@ -10,3 +10,5 @@ build/
 partida.dat
 save.txt
 *.log
+tmp_untracked/
+
