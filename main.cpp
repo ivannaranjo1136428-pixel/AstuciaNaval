@@ -12,7 +12,7 @@ using namespace std;
 class Barco {
 public:
     Barco();
-    int coordenadas[2][4]; // [x/y][indice]
+    int coordenadas[2][4]; // [x/y][indice] validar ubicacion
 };
 
 Barco::Barco() {
