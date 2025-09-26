@@ -229,4 +229,4 @@ public:
     static void MostrarHistorial(const std::vector<std::string>& h);
 };
 
-#endif // JUEGO_H
+#endif // JUEGO_H subir commit desde terminal
