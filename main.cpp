@@ -20,7 +20,8 @@ Barco::Barco() {
     for (int i = 0; i < 4; i++) {
         cout << "  Posicion " << i << ":\n";
         cout << "   x: "; cin >> coordenadas[0][i];
-        cout << "   y: "; cin >> coordenadas[1][i];
+        cout << "   y: "; cin >> coordenadas[1][i];// prueba rama
+
     }
 }
 
