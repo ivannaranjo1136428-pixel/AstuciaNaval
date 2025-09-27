@@ -206,27 +206,4 @@ int main() {
     juego.Iniciar();
     return 0;
 }
-// actualizacion 26 
 
-#ifndef JUEGO_H
-#define JUEGO_H
-
-#include <string>
-#include <vector>
-#include "Jugador.h"
-
-class Juego {
-public:
-    Jugador j1, j2;
-    std::string turno;
-    std::vector<std::string> historial;
-
-    Juego();
-    Juego(const std::string& n1, const std::string& n2);
-    Juego(const Jugador& p1, const Jugador& p2, const std::string& turn, const std::vector<std::string>& hist);
-
-    void Iniciar();
-    static void MostrarHistorial(const std::vector<std::string>& h);
-};
-
-#endif // JUEGO_H subir commit desde terminal
