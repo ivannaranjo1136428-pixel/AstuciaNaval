@@ -63,3 +63,85 @@ bool Partida::Cargar(Jugador& j1, Jugador& j2, std::string& turno, std::vector<s
     }
     return true;
 }
+#ifndef JUEGO_H
+#define JUEGO_H
+
+#include <string>
+#include <vector>
+#include "Jugador.h"
+
+class Juego {
+public:
+    Jugador j1, j2;
+    std::string turno;
+    std::vector<std::string> historial;
+
+    Juego();
+    Juego(const std::string& n1, const std::string& n2);
+    Juego(const Jugador& p1, const Jugador& p2, const std::string& turn, const std::vector<std::string>& hist);
+
+    void Iniciar();
+    static void MostrarHistorial(const std::vector<std::string>& h);
+};
+
+#endif // JUEGO_H
+#include "Juego.h"
+#include "Partida.h"
+#include <iostream>
+#include <limits>
+
+Juego::Juego() {}
+
+Juego::Juego(const std::string& n1, const std::string& n2) : j1(n1), j2(n2), turno(n1) {}
+
+Juego::Juego(const Jugador& p1, const Jugador& p2, const std::string& turn, const std::vector<std::string>& hist)
+    : j1(p1), j2(p2), turno(turn), historial(hist) {
+}
+
+void Juego::MostrarHistorial(const std::vector<std::string>& h) {
+    std::cout << "\n=== HISTORIAL DE PARTIDA ===\n";
+    for (size_t i = 0; i < h.size(); ++i) {
+        std::cout << "---- Jugada " << (i + 1) << " ----\n";
+        std::cout << h[i] << "\n";
+    }
+}
+
+void Juego::Iniciar() {
+    std::cout << "=== ASTUCIA NAVAL ===\n";
+
+    if (j1.barcos.empty()) j1.ColocarBarcos();
+    if (j2.barcos.empty()) j2.ColocarBarcos();
+
+    Jugador* turnoPtr = (turno == j1.nombre) ? &j1 : &j2;
+    Jugador* enemigoPtr = (turnoPtr == &j1) ? &j2 : &j1;
+
+    while (true) {
+        std::cout << "\nTurno de " << turnoPtr->nombre << "\n";
+
+        bool acierto;
+        do {
+            acierto = turnoPtr->Disparar(*enemigoPtr, historial);
+            Partida::Guardar(j1, j2, turnoPtr->nombre, historial);
+
+            if (enemigoPtr->HaPerdido()) {
+                std::cout << "\nVICTORIA - " << turnoPtr->nombre << " ha ganado la partida!\n";
+                return;
+            }
+
+            if (acierto) {
+                std::cout << "REPITE - " << turnoPtr->nombre << " acerto y repite disparo.\n";
+            }
+
+        } while (acierto);
+
+        if (turnoPtr == &j1) {
+            turnoPtr = &j2;
+            enemigoPtr = &j1;
+        }
+        else {
+            turnoPtr = &j1;
+            enemigoPtr = &j2;
+        }
+        turno = turnoPtr->nombre;
+    }
+}
