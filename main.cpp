@@ -145,3 +145,55 @@ void Juego::Iniciar() {
         turno = turnoPtr->nombre;
     }
 }
+#include <iostream>
+#include <string>
+#include <limits>
+#include <fstream>
+#include <vector>
+
+#include "Jugador.h"
+#include "Juego.h"
+#include "Partida.h"
+
+int main() {
+    std::ifstream test("partida.dat", std::ios::binary);
+    if (test) {
+        char op;
+        std::cout << "Se encontro una partida guardada. Desea cargarla? (S/N): ";
+        std::cin >> op;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (op == 'S' || op == 's') {
+            Jugador j1, j2;
+            std::string turno;
+            std::vector<std::string> historial;
+            if (Partida::Cargar(j1, j2, turno, historial)) {
+                char h;
+                std::cout << "Desea ver el historial? (S/N): ";
+                std::cin >> h;
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                if (h == 'S' || h == 's') {
+                    Juego::MostrarHistorial(historial);
+                }
+                Juego juegoCargado(j1, j2, turno, historial);
+                juegoCargado.Iniciar();
+                return 0;
+            }
+            else {
+                std::cout << "No se pudo cargar la partida.\n";
+            }
+        }
+    }
+
+    std::string n1, n2;
+    std::cout << "Nombre del Jugador 1: ";
+    std::getline(std::cin, n1);
+    if (n1.empty()) { std::getline(std::cin, n1); }
+
+    std::cout << "Nombre del Jugador 2: ";
+    std::getline(std::cin, n2);
+    if (n2.empty()) { std::getline(std::cin, n2); }
+
+    Juego juego(n1, n2);
+    juego.Iniciar();
+    return 0;
+}
