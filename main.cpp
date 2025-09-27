@@ -84,7 +84,7 @@ public:
     static void MostrarHistorial(const std::vector<std::string>& h);
 };
 
-#endif // JUEGO_H
+#endif // JUEGO_H 
 #include "Juego.h"
 #include "Partida.h"
 #include <iostream>
