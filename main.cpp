@@ -1,38 +1,11 @@
 ﻿#include <iostream>
 #include <vector>
 #include <string>
-#include <sstream>
 #include <limits>
+#include <sstream>
 using namespace std;
 
-
-
-class Barco {
-    int id;
-    int size;
-    int impactos;
-public:
-    Barco(int i = 0, int s = 0) : id(i), size(s), impactos(0) {}
-    void Impactar() { impactos++; }
-    bool Hundido() const { return impactos >= size; }
-};
-
-class Tablero {
-public:
-    static int GetTAM() { return 20; }
-    bool ColocarBarco(int, int, bool, int) { return true; }
-    bool Disparar(int, int, int& idImpactado, bool& yaDisparado) {
-        yaDisparado = false;
-        idImpactado = 0;
-        return (rand() % 2 == 0); // aleatorio acierto/fallo
-    }
-    void Mostrar(bool) {}
-    void SetBarcoID(int, int, int) {}
-    void MarcarBarcoHundido(int) {}
-    string ToStringGuia() const { return "[Guia dummy]\n"; }
-};
-
-//  Clase Jugador 
+// =Clase Jugador (Versión Final Rama B) 
 class Jugador {
 public:
     string nombre;
@@ -42,82 +15,81 @@ public:
 
     Jugador(string n = "") : nombre(n) {}
 
+    // Lectura segura de coordenadas
     int LeerCoordenada(const string& msg) {
         int valor;
         while (true) {
             cout << msg;
             cin >> valor;
-            if (cin.fail()) {
+            if (cin.fail() || valor < 0 || valor >= Tablero::GetTAM()) {
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "ERROR - Debe ingresar un numero.\n";
+                cout << "ERROR - valor inválido.\n";
                 continue;
             }
-            if (valor < 0 || valor >= Tablero::GetTAM()) {
-                cout << "ERROR - Valor fuera de rango (0-19).\n";
-                continue;
-            }
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             return valor;
         }
     }
 
+    // Colocación de barcos
     void ColocarBarcos() {
-        cout << "\n>>> " << nombre << " coloca barcos (dummy)\n";
-        for (int b = 0; b < 3; ++b) {
-            barcos.push_back(Barco(b, 4));
+        cout << "\nColocando barcos para " << nombre << "...\n";
+        for (int b = 0; b < 2; b++) {
+            int x = LeerCoordenada("  x: ");
+            int y = LeerCoordenada("  y: ");
+            char orient;
+            cout << "  Orientacion (H/V): ";
+            cin >> orient;
+            bool horizontal = (orient == 'H' || orient == 'h');
+            int idBarco = barcos.size();
+            Barco nuevo(idBarco, 2);
+            if (propio.ColocarBarco(x, y, horizontal, idBarco)) {
+                barcos.push_back(nuevo);
+                cout << "Barco colocado.\n";
+            }
+            else {
+                cout << "ERROR - No se pudo colocar.\n";
+                b--; // repetir intento
+            }
         }
     }
 
-    int BarcosRestantes() const {
-        int vivos = 0;
-        for (const Barco& b : barcos) if (!b.Hundido()) vivos++;
-        return vivos;
-    }
-
+    // Acción de disparar contra enemigo
     bool Disparar(Jugador& enemigo, vector<string>& historial) {
-        cout << "\n" << nombre << " dispara a " << enemigo.nombre << "...\n";
-        int x = LeerCoordenada(" x: ");
-        int y = LeerCoordenada(" y: ");
-        int idImpactado = -1;
-        bool yaDisparado = false;
-        bool acierto = enemigo.propio.Disparar(x, y, idImpactado, yaDisparado);
+        cout << "\nGuia de disparos contra " << enemigo.nombre << ":\n";
+        enemigo.oponente.MostrarGuia();
+
+        int x = LeerCoordenada("x: ");
+        int y = LeerCoordenada("y: ");
+
+        int id = -1;
+        bool ya = false;
+        bool acierto = enemigo.propio.Disparar(x, y, id, ya);
+
+        if (ya) {
+            cout << "Ya disparaste aquí.\n";
+            return false;
+        }
 
         if (acierto) {
             cout << "IMPACTO!\n";
-            enemigo.barcos[idImpactado].Impactar();
+            enemigo.barcos[id].Impactar();
         }
         else {
             cout << "AGUA...\n";
         }
+
+        ostringstream ss;
+        ss << "Disparo " << nombre << " a (" << x << "," << y << ")";
+        historial.push_back(ss.str());
+
         return acierto;
     }
 
+    // Validar derrota
     bool HaPerdido() const {
-        for (const Barco& b : barcos) if (!b.Hundido()) return false;
+        for (const Barco& b : barcos)
+            if (!b.Hundido()) return false;
         return true;
     }
 };
-
-//  MAIN DE PRUEBA 
-int main() {
-    Jugador jugadorA("Jugador A");
-    Jugador jugadorB("Jugador B");
-
-    jugadorA.ColocarBarcos();
-    jugadorB.ColocarBarcos();
-
-    vector<string> historial;
-
-    jugadorA.Disparar(jugadorB, historial);
-    jugadorB.Disparar(jugadorA, historial);
-
-    cout << "\nFin de prueba. Barcos A restantes: " << jugadorA.BarcosRestantes() << "\n";
-    cout << "Barcos B restantes: " << jugadorB.BarcosRestantes() << "\n";
-
-    return 0;
-}
-
-
-
-
