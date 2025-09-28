@@ -1,4 +1,4 @@
-#include "C_juego/Partida.h"
+#include "Partida.h"
 
 Partida::Partida(): player1_(), player2_(), turno_(1) {}
 
