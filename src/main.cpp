@@ -1,5 +1,6 @@
+#include <string>
 #include <iostream>
-#include "C_juego/Partida.h"
+#include "Partida.h"
 
 int main() {
     Partida p;
